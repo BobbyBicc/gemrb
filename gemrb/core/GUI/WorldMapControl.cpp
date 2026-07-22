@@ -98,7 +98,7 @@ void WorldMapControl::DrawSelf(const Region& rgn, const Region& /*clip*/)
 			if (!(worldmap->Flags & 1)) flags ^= BlitFlags::COLOR_MOD;
 			if (worldmap->Flags == 2) flags |= BlitFlags::GREY;
 		}
-		if (m == Area && m->HighlightSelected()) {
+		if (m == Area) {
 			VideoDriver->BlitGameSprite(icon, offset, flags, hoverAnim.Current());
 		} else if (!(m->GetAreaStatus() & WMP_ENTRY_VISITED)) {
 			VideoDriver->BlitGameSprite(icon, offset, flags, color_notvisited);
@@ -143,9 +143,7 @@ void WorldMapControl::DrawSelf(const Region& rgn, const Region& /*clip*/)
 		Region r2 = Region(MapToScreen(p), icon_frame.size);
 
 		Font::PrintColors colors;
-		if (Area == m) {
-			colors.fg = hoverAnim.Current();
-		} else if (!(m->GetAreaStatus() & WMP_ENTRY_VISITED)) {
+		if (!(m->GetAreaStatus() & WMP_ENTRY_VISITED)) {
 			colors.fg = color_notvisited;
 		} else {
 			colors.fg = color_normal;
@@ -254,6 +252,9 @@ bool WorldMapControl::OnMouseOver(const MouseEvent& me)
 	}
 	if (Area == nullptr) {
 		SetTooltip(u"");
+	}
+	if (Area != oldArea) {
+		MarkDirty();
 	}
 
 	return true;
